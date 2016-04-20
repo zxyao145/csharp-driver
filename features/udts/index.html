@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="DataStax C# Driver for Apache Cassandra">
+    <meta name="author" content="DataStax">
+
+    <title>DataStax C# Driver - User-defined types</title>
+
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="apple-touch-icon" href="../../favicon.png">
+    <link href="../../css/style.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+    <link href="../../css/hotkeys.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body ng-app="docs" data-spy="scroll" data-target="#table-of-contents" data-offset="69">
+    <header class="container-fluid navbar">
+      <div class="row">
+        <div class="col-sm-4">
+          <a class="navbar-brand" href="../../"><img alt="Brand" src="../../img/logo.png">DataStax C# Driver</a>
+        </div>
+        <div class="col-md-4 col-md-offset-4">
+          <div class="row">
+            <div class="col-md-12">
+              <ul class="list-inline" role="nav">
+                <li><a href="https://academy.datastax.com/" class="navbar-link">DataStax Academy</a></li>
+                <li><a href="http://www.datastax.com/dev/blog" class="navbar-link">Tech Blog</a></li>
+                <li><a href="http://www.datastax.com/what-we-offer/products-services/support" class="navbar-link">Support</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <form id="search" class="form-search dropdown visible-lg-block" ng-controller="search" ng-class="{open: hasResults}" role="search" ng-submit="submit()" data-spy="affix" data-offset-top="130">
+                <div class="form-group has-feedback">
+                  <input type="search" class="form-control input-sm mousetrap" placeholder="Search..." ng-model="q" ng-change="search('v3.0')" ng-disabled="!searchReady" disabled data-hotkey="{down: moveDown, up: moveUp, esc: reset}" data-search>
+                </div>
+                <ul class="dropdown-menu search-results" role="menu">
+                  <li ng-repeat="result in results" ng-class="{'bg-warning': $index == current}"><a ng-href="{{basePath}}{{result.path}}"><span ng-bind-html="summary(result)"></span></a></li>
+                </ul>
+              </form>
+            </div>
+            <div class="col-md-4">
+              <a href="http://www.datastax.com/download" class="btn btn-primary btn-sm">Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row crumbs-wrapper">
+        <div class="col-md-12">
+          <nav id="crumbs" data-spy="affix" data-offset-top="130">
+            <ol class="breadcrumb">
+              
+              
+              
+              
+              <li><a href="../../">Home</a></li>
+              
+              
+              
+              
+              
+              <li><a href="../">Features</a></li>
+              
+              
+              
+              
+              
+              <li class="active">User-defined types</li>
+              <li class="dropdown" id="table-of-contents">
+                <div class="btn-group">
+                  <button id="current-section" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                    Jump to&#8230; <span class="caret"></span><span class="sr-only">Table of Contents</span>
+                  </button>
+                  <ul class="dropdown-menu nav nav-pills nav-stacked">
+                    <li><a href="#user-defined-types">Page Top <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a></li>
+<li><a href="#cql-column-and-c-class-properties-mismatch">CQL column and C# class properties mismatch
+</a></li>
+<li><a href="#nesting-user-defined-types-in-cql">Nesting User-defined types In CQL
+</a></li>
+                  </ul>
+                </div>
+              </li>
+              
+              
+              
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid" id="content">
+      <div class="row">
+        <div class="col-md-3">
+          <div id="navigation" class="side-nav" role="tablist" aria-multiselectable="true">
+            <h3>Contents</h3>
+            <ul class="nav nav-pills nav-stacked">
+  
+  
+  
+  <li>
+    <a href="../../faq/">FAQ <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li class="active">
+    <a href="../">Features <small>page</small></a>
+    <ul class="nav nav-pills nav-stacked">
+  
+  
+  
+  <li>
+    <a href="../address-resolution/">Address resolution <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../automatic-failover/">Automatic failover <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../datatypes/">CQL data types to C# types <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../connection-heartbeat/">Connection heartbeat <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../connection-pooling/">Connection pooling <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../components/">Driver components <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../parametrized-queries/">Parameterized queries <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../query-warnings/">Query warnings <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../paging/">Result paging <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../routing-queries/">Routing queries <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../speculative-retries/">Speculative query execution <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../tuning-policies/">Tuning policies <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../udfs/">User-defined functions and aggregates <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li class="active">
+    <a href="./" class="current">User-defined types <small>page</small></a>
+    
+  </li>
+  
+  
+</ul>
+
+  </li>
+  
+  
+</ul>
+
+          </div>
+        </div>
+        <div class="col-md-9 content">
+          
+
+<h1 id="user-defined-types" class="target">User-defined types<a class="anchor" href="#user-defined-types" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h1>
+
+<p>Cassandra 2.1 introduced support for <a href="https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlRefUDType.html">User-defined types (UDT)</a>. A user-defined type simplifies handling a group of
+related properties.</p>
+
+<p>A quick example is a user account table that contains address details described through a set of columns:
+street, city, zip code. With the addition of UDTs, you can define this group of properties as a type and access
+them as a single entity or separately.</p>
+
+<p>User-defined types are declared at the keyspace level.</p>
+
+<p>In your application, you can map your UDTs to application entities. For example, given the following UDT:</p>
+<pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">address</span> <span class="p">(</span>
+   <span class="n">street</span> <span class="n">text</span><span class="p">,</span>
+   <span class="n">city</span> <span class="n">text</span><span class="p">,</span>
+   <span class="n">zip</span> <span class="n">int</span><span class="p">,</span>
+   <span class="n">phones</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span>
+<span class="p">);</span>
+</code></pre>
+<p>You create a C# class that maps to the UDT:</p>
+<pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Address</span>
+<span class="p">{</span>
+   <span class="k">public</span> <span class="kt">string</span> <span class="n">Street</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+   <span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+   <span class="k">public</span> <span class="kt">int</span> <span class="n">Zip</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+   <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Phones</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;}</span>
+<span class="p">}</span>
+</code></pre>
+<p>You declare the mapping once at the session level:</p>
+<pre class="highlight"><code><span class="n">session</span><span class="p">.</span><span class="n">UserDefinedTypes</span><span class="p">.</span><span class="nf">Define</span><span class="p">(</span>
+   <span class="n">UdtMap</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Address</span><span class="p">&gt;()</span>
+<span class="p">);</span>
+</code></pre>
+<p>Once declared the mapping will be available for the lifetime of the application:</p>
+<pre class="highlight"><code><span class="n">var</span> <span class="n">results</span> <span class="p">=</span> <span class="n">session</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="s">"SELECT id, name, address FROM users where id = 756716f7-2e54-4715-9f00-91dcbea6cf50"</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">row</span> <span class="p">=</span> <span class="n">results</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span>
+<span class="c1">// You retrieve the field as a value of type Address
+</span><span class="n">var</span> <span class="n">userAddress</span> <span class="p">=</span> <span class="n">row</span><span class="p">.</span><span class="n">GetValue</span><span class="p">&lt;</span><span class="n">Address</span><span class="p">&gt;(</span><span class="s">"address"</span><span class="p">);</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"The user lives on {0} Street"</span><span class="p">,</span> <span class="n">userAddress</span><span class="p">.</span><span class="n">Street</span><span class="p">);</span>
+</code></pre>
+<h2 id="cql-column-and-c-class-properties-mismatch" class="target">CQL column and C# class properties mismatch<a class="anchor" href="#cql-column-and-c-class-properties-mismatch" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h2>
+
+<p>For the automatic mapping to work, the table column names and the class properties must match (note that
+column-to-field matching is case-insensitive). For example, in the UDT and the C# class examples above were changed:</p>
+<pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">address</span> <span class="p">(</span>
+   <span class="n">street</span> <span class="n">text</span><span class="p">,</span>
+   <span class="n">city</span> <span class="n">text</span><span class="p">,</span>
+   <span class="n">zip_code</span> <span class="n">int</span><span class="p">,</span>
+   <span class="n">phones</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span>
+<span class="p">);</span>
+</code></pre>
+<pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Address</span>
+<span class="p">{</span>
+   <span class="k">public</span> <span class="kt">string</span> <span class="n">Street</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+   <span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+   <span class="k">public</span> <span class="kt">int</span> <span class="n">ZipCode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+   <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Phones</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;}</span>
+<span class="p">}</span>
+</code></pre>
+<p>You can also define the properties manually:</p>
+<pre class="highlight"><code><span class="n">session</span><span class="p">.</span><span class="n">UserDefinedTypes</span><span class="p">.</span><span class="nf">Define</span><span class="p">(</span>
+   <span class="n">UdtMap</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Address</span><span class="p">&gt;()</span>
+      <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">a</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">Street</span><span class="p">,</span> <span class="s">"street"</span><span class="p">)</span>
+      <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">a</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">City</span><span class="p">,</span> <span class="s">"city"</span><span class="p">)</span>
+      <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">a</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">Zip</span><span class="p">,</span> <span class="s">"zip"</span><span class="p">)</span>
+      <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">a</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">Phones</span><span class="p">,</span> <span class="s">"phones"</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre>
+<p>You can still use automatic mapping, but you must add a call to the Map method. For example:</p>
+<pre class="highlight"><code><span class="n">session</span><span class="p">.</span><span class="n">UserDefinedTypes</span><span class="p">.</span><span class="nf">Define</span><span class="p">(</span>
+   <span class="n">UdtMap</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Address</span><span class="p">&gt;()</span>
+      <span class="p">.</span><span class="nf">Automap</span><span class="p">()</span>
+      <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">a</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">Zipcode</span><span class="p">,</span> <span class="s">"zip_code"</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre>
+<h2 id="nesting-user-defined-types-in-cql" class="target">Nesting User-defined types In CQL<a class="anchor" href="#nesting-user-defined-types-in-cql" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h2>
+
+<p>UDTs can be nested relatively arbitrarily. For the C# driver you have to define the mapping to all the user-defined
+types used.</p>
+
+<p>Based on the previous example, let’s change the phones column from <code>set&lt;text&gt;</code> to a <code>set&lt;phone&gt;</code>, where phone
+contains an alias, a number and a country code.</p>
+
+<p>Phone UDT</p>
+<pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">phone</span> <span class="p">(</span> 
+   <span class="k">alias</span> <span class="n">text</span><span class="p">,</span>
+   <span class="n">number</span> <span class="n">text</span><span class="p">,</span> 
+   <span class="n">country_code</span> <span class="n">int</span>
+<span class="p">);</span>
+</code></pre>
+<p>Address UDT</p>
+<pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TYPE</span> <span class="n">address</span> <span class="p">(</span> 
+   <span class="n">street</span> <span class="n">text</span><span class="p">,</span> 
+   <span class="n">city</span> <span class="n">text</span><span class="p">,</span> 
+   <span class="n">zip_code</span> <span class="n">int</span><span class="p">,</span> 
+   <span class="n">phones</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">phone</span><span class="o">&gt;</span>
+<span class="p">);</span>
+</code></pre>
+<p>Now we can update the <code>Address</code> class to use the <code>Phone</code> class:</p>
+<pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Address</span> 
+<span class="p">{</span> 
+   <span class="k">public</span> <span class="kt">string</span> <span class="n">Street</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> 
+   <span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> 
+   <span class="k">public</span> <span class="kt">int</span> <span class="n">ZipCode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> 
+   <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Phone</span><span class="p">&gt;</span> <span class="n">Phones</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;}</span> 
+<span class="p">}</span>
+</code></pre>
+<p>You have to define the mapping for both classes</p>
+<pre class="highlight"><code><span class="n">session</span><span class="p">.</span><span class="n">UserDefinedTypes</span><span class="p">.</span><span class="nf">Define</span><span class="p">(</span> 
+   <span class="n">UdtMap</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Phone</span><span class="p">&gt;(),</span> 
+   <span class="n">UdtMap</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Address</span><span class="p">&gt;()</span>
+      <span class="p">.</span><span class="nf">Automap</span><span class="p">()</span>
+      <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">a</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">ZipCode</span><span class="p">,</span> <span class="s">"zip_code"</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre>
+<p>After that, you can reuse the mapping within your application.</p>
+<pre class="highlight"><code><span class="n">var</span> <span class="n">userAddress</span> <span class="p">=</span> <span class="n">row</span><span class="p">.</span><span class="n">GetValue</span><span class="p">&lt;</span><span class="n">Address</span><span class="p">&gt;(</span><span class="s">"address"</span><span class="p">);</span> 
+<span class="n">var</span> <span class="n">mainPhone</span> <span class="p">=</span> <span class="n">userAddress</span><span class="p">.</span><span class="n">Phones</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span> 
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"User main phone is {0}"</span><span class="p">,</span> <span class="n">mainPhone</span><span class="p">.</span><span class="n">Alias</span><span class="p">);</span>
+</code></pre>
+
+
+        </div>
+      </div>
+    </div>
+
+    
+    <footer class="container text-muted">
+      <ul class="list-inline">
+      
+        
+        <li>
+          <a href="https://github.com/datastax/csharp-driver/">Code</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="http://datastax.github.io/csharp-driver/">Docs</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="http://docs.datastax.com/en/latest-csharp-driver-api/html/N_Cassandra.htm">API docs</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="https://datastax-oss.atlassian.net/projects/CSHARP/issues">Issues</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="https://groups.google.com/a/lists.datastax.com/forum/#!forum/csharp-driver-user">Mailing List</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="irc://irc.freenode.net/datastax-drivers">IRC Channel</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="https://www.nuget.org/packages/CassandraCSharpDriver">Nuget</a>
+        </li>
+      
+      </ul>
+    </footer>
+    
+
+    <script src="../../js/jquery.js"></script>
+    <script src="../../js/bootstrap.js"></script>
+    <script src="../../js/angular.js"></script>
+    <script src="../../js/mousetrap.js"></script>
+    <script src="../../js/hotkeys.js"></script>
+    <script src="../../js/ZeroClipboard.js"></script>
+    <script src="../../js/lunr.js"></script>
+    <script src="../../js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="DataStax C# Driver for Apache Cassandra">
+    <meta name="author" content="DataStax">
+
+    <title>DataStax C# Driver - Tuning policies</title>
+
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="apple-touch-icon" href="../../favicon.png">
+    <link href="../../css/style.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+    <link href="../../css/hotkeys.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body ng-app="docs" data-spy="scroll" data-target="#table-of-contents" data-offset="69">
+    <header class="container-fluid navbar">
+      <div class="row">
+        <div class="col-sm-4">
+          <a class="navbar-brand" href="../../"><img alt="Brand" src="../../img/logo.png">DataStax C# Driver</a>
+        </div>
+        <div class="col-md-4 col-md-offset-4">
+          <div class="row">
+            <div class="col-md-12">
+              <ul class="list-inline" role="nav">
+                <li><a href="https://academy.datastax.com/" class="navbar-link">DataStax Academy</a></li>
+                <li><a href="http://www.datastax.com/dev/blog" class="navbar-link">Tech Blog</a></li>
+                <li><a href="http://www.datastax.com/what-we-offer/products-services/support" class="navbar-link">Support</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <form id="search" class="form-search dropdown visible-lg-block" ng-controller="search" ng-class="{open: hasResults}" role="search" ng-submit="submit()" data-spy="affix" data-offset-top="130">
+                <div class="form-group has-feedback">
+                  <input type="search" class="form-control input-sm mousetrap" placeholder="Search..." ng-model="q" ng-change="search('v3.0')" ng-disabled="!searchReady" disabled data-hotkey="{down: moveDown, up: moveUp, esc: reset}" data-search>
+                </div>
+                <ul class="dropdown-menu search-results" role="menu">
+                  <li ng-repeat="result in results" ng-class="{'bg-warning': $index == current}"><a ng-href="{{basePath}}{{result.path}}"><span ng-bind-html="summary(result)"></span></a></li>
+                </ul>
+              </form>
+            </div>
+            <div class="col-md-4">
+              <a href="http://www.datastax.com/download" class="btn btn-primary btn-sm">Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row crumbs-wrapper">
+        <div class="col-md-12">
+          <nav id="crumbs" data-spy="affix" data-offset-top="130">
+            <ol class="breadcrumb">
+              
+              
+              
+              
+              <li><a href="../../">Home</a></li>
+              
+              
+              
+              
+              
+              <li><a href="../">Features</a></li>
+              
+              
+              
+              
+              
+              <li class="active">Tuning policies</li>
+              <li class="dropdown" id="table-of-contents">
+                <div class="btn-group">
+                  <button id="current-section" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                    Jump to&#8230; <span class="caret"></span><span class="sr-only">Table of Contents</span>
+                  </button>
+                  <ul class="dropdown-menu nav nav-pills nav-stacked">
+                    <li><a href="#tuning-policies">Page Top <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a></li>
+<li>
+<a href="#load-balancing-policy">Load-balancing policy
+</a><ul class="nav nav-pills nav-stacked"><li><a href="#default-load-balancing-policy">Default load-balancing policy
+</a></li></ul>
+</li>
+<li>
+<a href="#reconnection-policy">Reconnection policy
+</a><ul class="nav nav-pills nav-stacked"><li><a href="#fixed-reconnection-policy-sample">FixedReconnectionPolicy sample
+</a></li></ul>
+</li>
+<li><a href="#retry-policy">Retry policy
+</a></li>
+                  </ul>
+                </div>
+              </li>
+              
+              
+              
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid" id="content">
+      <div class="row">
+        <div class="col-md-3">
+          <div id="navigation" class="side-nav" role="tablist" aria-multiselectable="true">
+            <h3>Contents</h3>
+            <ul class="nav nav-pills nav-stacked">
+  
+  
+  
+  <li>
+    <a href="../../faq/">FAQ <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li class="active">
+    <a href="../">Features <small>page</small></a>
+    <ul class="nav nav-pills nav-stacked">
+  
+  
+  
+  <li>
+    <a href="../address-resolution/">Address resolution <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../automatic-failover/">Automatic failover <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../datatypes/">CQL data types to C# types <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../connection-heartbeat/">Connection heartbeat <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../connection-pooling/">Connection pooling <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../components/">Driver components <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../parametrized-queries/">Parameterized queries <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../query-warnings/">Query warnings <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../paging/">Result paging <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../routing-queries/">Routing queries <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../speculative-retries/">Speculative query execution <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li class="active">
+    <a href="./" class="current">Tuning policies <small>page</small></a>
+    
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../udfs/">User-defined functions and aggregates <small>page</small></a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a href="../udts/">User-defined types <small>page</small></a>
+  </li>
+  
+  
+</ul>
+
+  </li>
+  
+  
+</ul>
+
+          </div>
+        </div>
+        <div class="col-md-9 content">
+          
+
+<h1 id="tuning-policies" class="target">Tuning policies<a class="anchor" href="#tuning-policies" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h1>
+
+<h2 id="load-balancing-policy" class="target">Load-balancing policy<a class="anchor" href="#load-balancing-policy" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h2>
+
+<p>The load balancing policy interface consists of three methods:</p>
+
+<ul>
+<li>
+<code>Distance(Host)</code>: determines the distance to the specified host. The values are <code>HostDistance.Ignored</code>, <code>Local</code> 
+and <code>Remote</code>.</li>
+<li>
+<code>Initialize(Cluster)</code>: initializes the policy. The driver calls this method only once and before any other method
+calls are made.</li>
+<li>
+<code>NewQueryPlan()</code>: returns the hosts to use for a query. Each new query calls this method.</li>
+</ul>
+
+<p>The driver includes these implementations:</p>
+
+<ul>
+<li><code>DCAwareRoundRobinPolicy</code></li>
+<li><code>RoundRobinPolicy</code></li>
+<li><code>TokenAwarePolicy</code></li>
+</ul>
+
+<h3 id="default-load-balancing-policy" class="target">Default load-balancing policy<a class="anchor" href="#default-load-balancing-policy" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h3>
+
+<p>The default load-balancing policy is the <code>TokenAwarePolicy</code> with <code>DCAwareRoundRobinPolicy</code> as a child policy. It may
+seem complex but it actually isn’t: The policy yields local replicas for a given key and, if not available,
+it yields nodes of the local datacenter in a round-robin manner.</p>
+
+<h2 id="reconnection-policy" class="target">Reconnection policy<a class="anchor" href="#reconnection-policy" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h2>
+
+<p>The reconnection policy consists of one method:</p>
+
+<ul>
+<li>
+<code>NewSchedule()</code>: creates a new schedule to use in reconnection attempts.</li>
+</ul>
+
+<p>By default, the driver uses an exponential reconnection policy. The driver includes these three policy classes:</p>
+
+<ul>
+<li><code>ConstantReconnectionPolicy</code></li>
+<li><code>ExponentialReconnectionPolicy</code></li>
+<li><code>FixedReconnectionPolicy</code></li>
+</ul>
+
+<h3 id="fixed-reconnection-policy-sample" class="target">FixedReconnectionPolicy sample<a class="anchor" href="#fixed-reconnection-policy-sample" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h3>
+<pre class="highlight"><code><span class="c1">// When building a cluster, set the reconnection policy to 
+// Wait a few milliseconds to attempt first reconnection (400 ms) 
+// Wait 5 seconds for the seconds reconnection attempt (5000 ms) 
+// Wait 2 minutes for the third (2 * 60000 ms) 
+// Wait 1 hour for the following attempts (60 * 60000 ms) 
+</span><span class="n">Cluster</span><span class="p">.</span><span class="nf">Builder</span><span class="p">()</span>
+   <span class="p">.</span><span class="nf">WithReconnectionPolicy</span><span class="p">(</span><span class="k">new</span> <span class="nf">FixedReconnectionPolicy</span><span class="p">(</span><span class="m">400</span><span class="p">,</span> <span class="m">5000</span><span class="p">,</span> <span class="m">2</span> <span class="p">*</span> <span class="m">60000</span><span class="p">,</span> <span class="m">60</span> <span class="p">*</span> <span class="m">60000</span><span class="p">)</span>
+</code></pre>
+<h2 id="retry-policy" class="target">Retry policy<a class="anchor" href="#retry-policy" aria-hidden="true"><span class="glyphicon glyphicon-link"></span></a>
+</h2>
+
+<p>A client may send requests to any node in a cluster whether or not it is a replica of the data being queried. This
+node is placed into the coordinator role temporarily. Which node is the coordinator is determined by the load
+balancing policy for the cluster. The coordinator is responsible for routing the request to the appropriate replicas.
+If a coordinator fails during a request, the driver connects to a different node and retries the request. If the
+coordinator knows before a request that a replica is down, it can throw an <code>UnavailableException</code>, but if the replica
+fails after the request is made, it throws a <code>ReadTimeoutException</code> or <code>WriteTimeoutException</code>. Of course, this all
+depends on the consistency level set for the query before executing it.</p>
+
+<p>A retry policy centralizes the handling of query retries, minimizing the need for catching and handling of exceptions
+in your business code.</p>
+
+<p>The retry policy interface consists of three methods:</p>
+
+<ul>
+<li><code>OnReadTimeout()</code></li>
+<li><code>OnUnavailable()</code></li>
+<li><code>OnWriteTimeout()</code></li>
+</ul>
+
+<p>By default, the driver uses a default retry policy. The driver includes these four policy classes:</p>
+
+<ul>
+<li><code>DefaultRetryPolicy</code></li>
+<li><code>DowngradingConsistencyRetryPolicy</code></li>
+<li><code>FallthroughRetryPolicy</code></li>
+<li><code>LoggingRetryPolicy</code></li>
+</ul>
+
+
+        </div>
+      </div>
+    </div>
+
+    
+    <footer class="container text-muted">
+      <ul class="list-inline">
+      
+        
+        <li>
+          <a href="https://github.com/datastax/csharp-driver/">Code</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="http://datastax.github.io/csharp-driver/">Docs</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="http://docs.datastax.com/en/latest-csharp-driver-api/html/N_Cassandra.htm">API docs</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="https://datastax-oss.atlassian.net/projects/CSHARP/issues">Issues</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="https://groups.google.com/a/lists.datastax.com/forum/#!forum/csharp-driver-user">Mailing List</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="irc://irc.freenode.net/datastax-drivers">IRC Channel</a>
+        </li>
+      
+        <li>·</li>
+        <li>
+          <a href="https://www.nuget.org/packages/CassandraCSharpDriver">Nuget</a>
+        </li>
+      
+      </ul>
+    </footer>
+    
+
+    <script src="../../js/jquery.js"></script>
+    <script src="../../js/bootstrap.js"></script>
+    <script src="../../js/angular.js"></script>
+    <script src="../../js/mousetrap.js"></script>
+    <script src="../../js/hotkeys.js"></script>
+    <script src="../../js/ZeroClipboard.js"></script>
+    <script src="../../js/lunr.js"></script>
+    <script src="../../js/app.js"></script>
+  </body>
+</html>
